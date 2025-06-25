@@ -1,0 +1,55 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+logs/
+!src/main/resources/
+
+# Maven
+target/
+.mvn/
+!**/src/**/target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# VS Code
+.vscode/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários
+*.swp
+*.tmp
+*.bak
+*.old
+
+# Banco de dados local (se houver scripts ou dumps)
+*.sql
+*.db
+
+# Arquivos de ambiente
+.env
+#application.properties
+application.yml
+
+# Testes temporários
+test-output/
+
+# Gerado por ferramentas (ex: cobertura, jacoco, etc)
+coverage/
+jacoco.exec
+
+# Docker
+*.pid
+docker-compose.override.yml
