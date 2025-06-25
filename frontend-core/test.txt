@@ -1,1 +1,0 @@
-A full stack web app with login control using token JWT, and added a CI pipeline and Monitoring

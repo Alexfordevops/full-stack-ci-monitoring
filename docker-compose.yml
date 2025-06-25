@@ -3,7 +3,7 @@ version: "3.8"
 services:
   api:
     build:
-      context: ./Core  # Caminho do Dockerfile
+      context: ./backend-core/Core  # Caminho do Dockerfile
     container_name: java-api
     depends_on:
       - db
@@ -24,6 +24,17 @@ services:
     secrets:
       - db_password 
       - jwt_secret # JWT_SECRET_FILE será lido automaticamente no entrypoint.sh
+    networks:
+      - backend
+
+  frontend:
+    build:
+      context: ./frontend-core
+    container_name: angular-app
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
     networks:
       - backend
 
