@@ -11,8 +11,9 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     @NotBlank
-    private String nome;
+    private String name;
 
     @Email
     @NotBlank
@@ -22,8 +23,10 @@ public class Client {
     @Column(unique = true)
     private String username;
 
+    @Column
     private String password;
 
+    @Column
     private String role = "ROLE_USER"; // default
 
     public String getUsername() {
@@ -54,12 +57,12 @@ public class Client {
         return id;
     }
 
-    public @NotBlank String getNome() {
-        return nome;
+    public @NotBlank String getName() {
+        return name;
     }
 
-    public void setNome(@NotBlank String nome) {
-        this.nome = nome;
+    public void setName(@NotBlank String name) {
+        this.name = name;
     }
 
     public @Email @NotBlank String getEmail() {

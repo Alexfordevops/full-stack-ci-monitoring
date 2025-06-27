@@ -12,6 +12,7 @@ import { AuthService } from '../auth.service';
     <h2>Registro</h2>
     <form [formGroup]="form" (ngSubmit)="register()">
       <input formControlName="name" placeholder="Nome">
+      <input formControlName="email" placeholder="Email">
       <input formControlName="username" placeholder="Username">
       <input formControlName="password" type="password" placeholder="Senha">
       <button type="submit">Registrar</button>
@@ -31,6 +32,7 @@ export class RegisterComponent {
   constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
     this.form = this.fb.group({
       name: ['', Validators.required],
+      email: ['', Validators.required, Validators.email],
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
