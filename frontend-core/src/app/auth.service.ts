@@ -12,7 +12,7 @@ export class AuthService {
     return this.http.post<{ token: string }>(`${this.API}/login`, credentials);
   }
 
-  register(data: { name: string; username: string; password: string }) {
+  register(data: { name: string; email:string; username: string; password: string }) {
     return this.http.post(`${this.API}/register`, data);
   }
 
