@@ -30,7 +30,7 @@ public class ClientService {
 
     public Client updateById(Long id, @NotNull Client updatedClient) {
         Client userData = searchById(id);
-        userData.setNome(updatedClient.getNome());
+        userData.setName(updatedClient.getName());
         userData.setEmail(updatedClient.getEmail());
         return repository.save(userData);
     }

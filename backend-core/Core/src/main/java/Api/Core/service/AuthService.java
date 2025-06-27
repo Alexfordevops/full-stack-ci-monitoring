@@ -26,7 +26,7 @@ public class AuthService {
         }
 
         Client user = new Client();
-        user.setNome(request.getNome());
+        user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
