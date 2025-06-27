@@ -58,7 +58,7 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             Client user = authService.register(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Usuário registrado com sucesso");
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("success","Usuário registrado com sucesso"));
         } catch (RuntimeException ex) {
             return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
         }
