@@ -32,7 +32,7 @@ services:
       context: ./frontend-core
     container_name: angular-app
     depends_on:
-      - backend
+      - api
     ports:
       - "4200:80"
     networks:
