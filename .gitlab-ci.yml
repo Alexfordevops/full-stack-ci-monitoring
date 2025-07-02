@@ -1,0 +1,142 @@
+stages:
+  - build
+  - test
+  - dockerize
+  - deploy
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_IMAGE_BACKEND: registry.gitlab.com/$CI_PROJECT_PATH/backend
+  DOCKER_IMAGE_FRONTEND: registry.gitlab.com/$CI_PROJECT_PATH/frontend
+
+# -----------------------
+# 1️⃣ Build Backend
+# -----------------------
+build-backend:
+  image: maven:3.9.6-eclipse-temurin-21
+  stage: build
+  script:
+    - cd backend-core/Core
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - backend-core/Core/target/*.war
+
+# -----------------------
+# 2️⃣ Build Frontend
+# -----------------------
+build-frontend:
+  image: node:18
+  stage: build
+  script:
+    - cd frontend-core
+    - npm install
+    - npm run build --prod
+  artifacts:
+    paths:
+      - frontend-core/dist/frontend-core/browser
+
+# -----------------------
+# 3️⃣ Teste Backend
+# -----------------------
+test-backend:
+  image: maven:3.9.6-eclipse-temurin-21
+  stage: test
+  script:
+    - cd backend-core/Core
+    - mvn test
+  artifacts:
+    when: always
+    reports:
+      junit: backend-core/Core/target/surefire-reports/*.xml
+
+# -----------------------
+# 4️⃣ Teste Frontend
+# -----------------------
+test-frontend:
+  image: node:18
+  stage: test
+  before_script:
+    - apt-get update && apt-get install -y wget ca-certificates fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 libatk1.0-0 libcups2 libdbus-1-3 libdrm2 libgbm1 libgtk-3-0 libnspr4 libnss3 libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 xdg-utils
+    - cd frontend-core
+    - npm ci
+    - npm install --save-dev puppeteer
+    - export CHROME_BIN=$(node -e "console.log(require('puppeteer').executablePath())")
+  script:
+    - npm run test -- --browsers=ChromeHeadlessNoSandbox
+  artifacts:
+    when: always
+    reports:
+      junit: frontend-core/test-results/test-results.xml
+
+# -----------------------
+# 5️⃣ Dockerize Backend
+# -----------------------
+dockerize-backend:
+  image: docker:24.0.5
+  services:
+    - docker:dind
+  stage: dockerize
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+  script:
+    - docker build -t $DOCKER_IMAGE_BACKEND backend-core/Core/
+    - docker push $DOCKER_IMAGE_BACKEND
+
+# -----------------------
+# 6️⃣ Dockerize Frontend
+# -----------------------
+dockerize-frontend:
+  image: docker:24.0.5
+  services:
+    - docker:dind
+  stage: dockerize
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+  script:
+    - docker build -t $DOCKER_IMAGE_FRONTEND frontend-core/
+    - docker push $DOCKER_IMAGE_FRONTEND
+
+# -----------------------
+# 7️⃣ Deploy STAGING
+# -----------------------
+deploy-staging:
+  image: docker:24.0.5
+  services:
+    - docker:dind
+  stage: deploy
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - docker info
+  script:
+    - docker-compose -f docker-compose.staging.yml down || true
+    - docker-compose -f docker-compose.staging.yml pull
+    - docker-compose -f docker-compose.staging.yml up -d
+  only:
+    - branches
+  except:
+    - main
+
+# -----------------------
+# 8️⃣ Deploy PRODUCTION
+# -----------------------
+deploy-production:
+  image: docker:24.0.5
+  services:
+    - docker:dind
+  stage: deploy
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - docker info
+  script:
+    - docker-compose -f docker-compose.prod.yml down || true
+    - docker-compose -f docker-compose.prod.yml pull
+    - docker-compose -f docker-compose.prod.yml up -d
+  only:
+    - main
