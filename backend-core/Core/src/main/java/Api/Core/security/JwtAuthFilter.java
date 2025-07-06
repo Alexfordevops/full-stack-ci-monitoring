@@ -2,7 +2,7 @@ package Api.Core.security;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -25,6 +25,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        // ✅ Libera sem autenticação os endpoints públicos
+        if (path.startsWith("/auth/") || path.startsWith("/actuator")) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         final String authHeader = request.getHeader("Authorization");
 
