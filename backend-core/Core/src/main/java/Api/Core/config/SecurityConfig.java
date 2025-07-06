@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults()) // .cors().and()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/register", "/actuator/health" , "/actuator/prometheus").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register", "/actuator/health" , "/actuator/prometheus", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess
