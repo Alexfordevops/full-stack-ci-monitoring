@@ -53,6 +53,26 @@ services:
     networks:
       - backend
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - backend
+
 secrets:
   db_password:
     file: ./secrets/db_password.txt  # Senha do banco
@@ -61,6 +81,7 @@ secrets:
 
 volumes:
   db_data:
+  grafana_data:
 
 networks:
   backend:
